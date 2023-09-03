@@ -45,7 +45,7 @@ OBJS		=	$(patsubst %.c,%.o,$(SRCS))
 
 # Binary name
 
-NAME		=	kfs_one
+NAME		=	kfs_two
 BIN			=	$(NAME).bin
 ISO			=	$(NAME).iso
 
@@ -92,3 +92,6 @@ drun:
 
 run:
 	qemu-system-i386 -s -cdrom $(ISO)
+
+brun:
+	qemu-system-i386 -kernel $(BIN)
