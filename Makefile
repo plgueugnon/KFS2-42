@@ -21,19 +21,8 @@ BOOT_OBJ	=	kernel/boot.o
 LINKER		=	kernel/linker.ld
 
 SRCS        =	kernel/src/kernel.c      \
-				kernel/src/sys/gdt.c         \
-				kernel/src/sys/system.c  \
-				# kernel/src/sys/kprintf.c  \
-				# kernel/src/sys/panic.c   \
-				# kernel/src/sys/syscall.c \
-				# kernel/src/sys/task.c    \
-				# kernel/src/sys/version.c \
-				# kernel/src/sys/process.c \
-				# kernel/src/sys/signal.c  \
-
-
-
-
+				kernel/src/gdt.c         \
+				kernel/src/system.c  \
 
 
 
@@ -41,7 +30,7 @@ INCLUDE_FOLDER = kernel/include
 
 H = ""
 
-OBJS		=	$(patsubst %.c,%.o,$(SRCS))
+OBJS		=	$(patsubst %.c,%.o,$(SRCS)) #$(patsubst %.s,%.o,$(SRCS))
 
 # Binary name
 

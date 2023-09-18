@@ -103,29 +103,26 @@ _start:
 1:	hlt
 	jmp 1b
 
-.intel_syntax noprefix
-// ; Global Descriptor Table
-.global gdt_flush
-.extern gp
+/* Source: http://www.osdever.net/bkerndev/Docs/gdt.htm
+* More explanations here: https://stackoverflow.com/questions/23978486/far-jump-in-gdt-in-bootloader
+* This will set up our new segment registers. We need to do
+* something special in order to set CS. We do what is called a
+* far jump. A jump that includes a segment as well as an offset.
+* This is declared in C as 'extern void gdt_flush();'
+[GLOBAL gdt_flush]     ; Allows the C code to link to this
+[extern gp]            ; Says that 'gp' is in another file
 gdt_flush:
-	// ; Load the GDT
-	lgdt [gp]
-	// ; Flush the values to 0x10
-	mov ax, 0x10
-	mov ds, ax
-	mov es, ax
-	mov fs, ax
-	mov gs, ax
-	mov ss, ax
-	jmp 0x08:flush2
-flush2:
-	ret
+    lgdt [gp]        ; Load the GDT with our 'gp' which is a special pointer
+    mov ax, 0x10      ; 0x10 is the offset in the GDT to our data segment
+    mov ds, ax        ; Load all data segment selectors
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
+    jmp 0x08:.flush   ; 0x08 is the offset to our code segment: Far jump!
+.flush:
+    ret               ; Returns back to the C code!
 
-.global tss_flush
-tss_flush:
-	mov ax, 0x2B
-	ltr ax
-	ret
 /*
 Set the size of the _start symbol to the current location '.' minus its start.
 This is useful when debugging or when you implement call tracing.
