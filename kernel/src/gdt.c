@@ -1,5 +1,4 @@
-#include <stdint.h>
-#include "misc.h"
+#include "../include/misc.h"
 
 // https://www.intel.com/content/www/us/en/architecture-and-technology/64-ia-32-architectures-software-developer-vol-3a-part-1-manual.html
 // https://wiki.osdev.org/GDT_Tutorial
@@ -106,7 +105,7 @@ t_gdt_ptr	*gp = (t_gdt_ptr *)0x00000800;
  * @param access Access permissions
  * @param gran Granularity
  */
-void create_gdt_descriptor(int num, unsigned long base, unsigned long limit, uint8_t access, unsigned char gran)
+void create_gdt_descriptor(int num, unsigned long base, unsigned long limit, unsigned char access, unsigned char gran)
 {
 	/* Base Address */
 	gdt[num].base_low =		(base & 0xFFFF);
@@ -121,35 +120,39 @@ void create_gdt_descriptor(int num, unsigned long base, unsigned long limit, uin
 	gdt[num].access = access;
 }
 
+extern void _gdt_flush(t_gdt_ptr *gp)
+{
+    asm volatile(
+        "lgdt %[gp]\n\t"
+        "mov $0x10, %%ax\n\t"
+        "mov %%ax, %%ds\n\t"
+        "mov %%ax, %%es\n\t"
+        "mov %%ax, %%fs\n\t"
+        "mov %%ax, %%gs\n\t"
+        "mov %%ax, %%ss\n\t"
+        "ljmp $0x08, $.flush%=\n\t"
+    	".flush%=:\n\t"
+        "ret\n\t"
+		:
+		: [gp] "m" (*gp)
+		: "eax"
+    );
+}
 
-// void gdt_flush()
-// {
-//     asm volatile(
-//         "lgdt [gp]\n\t"
-//         "mov ax, 0x10\n\t"
-//         "mov ds, ax\n\t"
-//         "mov es, ax\n\t"
-//         "mov fs, ax\n\t"
-//         "mov gs, ax\n\t"
-//         "mov ss, ax\n\t"
-//         "jmp 0x08:.flush\n"
-//     ".flush:\n\t"
-//         "ret\n"
-//     );
-// }
 
 void init_gdt(void)
 {
 	gp->limit = (sizeof(t_gdt_entry) * 7) - 1;;
 	gp->base = (unsigned int)&gdt;
     create_gdt_descriptor(0, 0, 0, 0, 0);	// Null
-    create_gdt_descriptor(1, 0, 0x000FFFFF, (uint8_t)GDT_CODE_PL0, 0xCF); // Kernel code
-    create_gdt_descriptor(2, 0, 0x000FFFFF, (uint8_t)GDT_DATA_PL0, 0xCF); // Kernel data
-	create_gdt_descriptor(3, 0, 0x000FFFFF, (uint8_t)GDT_STACK_PL0, 0xCF); // Kernel stack
+    create_gdt_descriptor(1, 0, 0x000FFFFF, (unsigned char)GDT_CODE_PL0, 0xCF); // Kernel code
+    create_gdt_descriptor(2, 0, 0x000FFFFF, (unsigned char)GDT_DATA_PL0, 0xCF); // Kernel data
+	create_gdt_descriptor(3, 0, 0x000FFFFF, (unsigned char)GDT_STACK_PL0, 0xCF); // Kernel stack
 
-    create_gdt_descriptor(4, 0, 0x000FFFFF, (uint8_t)GDT_CODE_PL3, 0xCF); // User code
-    create_gdt_descriptor(5, 0, 0x000FFFFF, (uint8_t)GDT_DATA_PL3, 0xCF); // User data
-	create_gdt_descriptor(6, 0, 0x000FFFFF, (uint8_t)GDT_STACK_PL3, 0xCF); // User stack
-	gdt_flush();
+    create_gdt_descriptor(4, 0, 0x000FFFFF, (unsigned char)GDT_CODE_PL3, 0xCF); // User code
+    create_gdt_descriptor(5, 0, 0x000FFFFF, (unsigned char)GDT_DATA_PL3, 0xCF); // User data
+	create_gdt_descriptor(6, 0, 0x000FFFFF, (unsigned char)GDT_STACK_PL3, 0xCF); // User stack
+
+	_gdt_flush(gp);
 }
 

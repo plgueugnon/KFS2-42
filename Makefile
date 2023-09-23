@@ -2,9 +2,8 @@ CRED_BACK=\033[45m
 CBLUE=\033[34m
 CEND=\033[0m
 
-CFLAGS  = -std=gnu99 -ffreestanding -O2 -Wall -Wextra -fno-builtin -fno-exceptions -fno-stack-protector -nostdlib -nodefaultlibs
+CFLAGS  = -m32 -std=gnu99 -ffreestanding -O2 -Wall -Wextra -g3 -fno-builtin -fno-exceptions -fno-stack-protector -nostdlib -nodefaultlibs -Wno-overflow
 CC      = i686-elf-gcc
-LD      = i686-elf-gcc
 LD_FLAGS= -ffreestanding -O2 -nostdlib
 ASM     = i686-elf-as
 # Directories
@@ -47,14 +46,14 @@ boot: $(BOOT_FILE)
 	@echo "$(CRED_BACK)Creating $(BOOT_OBJ)$(CEND)"
 	$(ASM) $(BOOT_FILE) -o $(BOOT_OBJ)
 
-%.o: %.c $(HFILES)
+%.o: %.c
 	@echo "$(CRED_BACK)Compiling $@$(CEND)"
 	@echo "This should update on .h files too"
-	$(CC) $(CFLAGS) -I $(INCLUDE_FOLDER) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 linker: $(LINKER) $(BOOT_OBJ) $(OBJS)
 	@echo "$(CRED_BACK)Linking$(CEND)"
-	$(LD) -T $(LINKER) -o $(BIN) $(LD_FLAGS) $(BOOT_OBJ) $(OBJS)
+	$(CC) -T $(LINKER) -o $(BIN) $(LD_FLAGS) $(BOOT_OBJ) $(OBJS)
 	@echo "$(CRED_BACK)$(BIN) ready!$(CEND)"
 
 iso:

@@ -1,7 +1,4 @@
-#include <stdbool.h>
-#include <system.h>
-#include <types.h>
-#include "misc.h"
+#include "../include/misc.h"
  
 #if defined(__linux__)
 #error "You are not using a cross-compiler, you will most certainly run into trouble"
@@ -29,8 +26,6 @@ enum vga_color {
 	VGA_COLOR_LIGHT_BROWN = 14,
 	VGA_COLOR_WHITE = 15,
 };
-
-void	init_gdt(void);
 
 static inline uint8_t vga_entry_color(enum vga_color fg, enum vga_color bg) 
 {
