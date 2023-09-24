@@ -29,7 +29,7 @@ INCLUDE_FOLDER = kernel/include
 
 H = ""
 
-OBJS		=	$(patsubst %.c,%.o,$(SRCS)) #$(patsubst %.s,%.o,$(SRCS))
+OBJS		=	$(patsubst %.c,%.o,$(SRCS))
 
 # Binary name
 

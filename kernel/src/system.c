@@ -93,3 +93,18 @@ int atoi(const char * str) {
 	}
 	return out;
 }
+
+void terminal_itoa_base(int n, int base)
+{
+	char *c = "0123456789abcdef";
+	int div = 1;
+
+	while (div < div * base && div * base < n)
+		div *= base;
+	while(div > 0)
+	{
+		terminal_putchar(c[n / div]);
+		n %= div;
+		div /= base;
+	}
+}

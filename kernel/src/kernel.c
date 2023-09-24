@@ -138,4 +138,12 @@ void kernel_main(void)
 	terminal_writestring("\n");
 	terminal_writestring("           :::      ::::::::  \n       :+:      :+:    :+:  \n     +:+ +:+         +:+    \n   +#+  +:+       +#+       \n +#+#+#+#+#+   +#+          \n      #+#    #+#            \n     ###   ########         \n");
 	terminal_writestring("\n");
+	terminal_writestring("Kernel stack: base 0x");
+	terminal_itoa_base(0, 16);
+	terminal_writestring(" | limit 0x");
+	terminal_itoa_base(1048575, 16);
+	terminal_writestring(" | access 0x");
+	terminal_itoa_base(GDT_STACK_PL0, 16);
+	terminal_writestring(" | gran 0x");
+	terminal_itoa_base(0xCF, 16);
 }
