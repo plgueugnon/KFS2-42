@@ -45,5 +45,6 @@ And you're done :)
 ## 3. Launch the OS
 
 ```
+make
 make brun
 ```
